@@ -17,5 +17,10 @@ namespace BlogApp.Data.Entities
             Id = id;
             Url = url;
         }
+
+        public void UpdateUrl(string url)
+        {
+            Url = url;
+        }
     }
 }
