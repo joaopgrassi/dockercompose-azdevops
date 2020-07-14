@@ -52,7 +52,7 @@ namespace BlogApp.Api.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(Blog), Status204NoContent)]
         [ProducesDefaultResponseType(typeof(string))]
-        public async Task<IActionResult> Update(Guid id, [FromBody] CreateBlogRequest updateRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateBlogRequest updateRequest, CancellationToken cancellationToken)
         {
             var existingBlog = await _dbContext.Blogs
                 .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
