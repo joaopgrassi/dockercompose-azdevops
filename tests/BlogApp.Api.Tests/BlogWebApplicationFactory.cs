@@ -5,11 +5,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using Xunit;
 
 namespace BlogApp.Api.Tests
 {
+    [Collection("Database")]
     public class BlogWebApplicationFactory : WebApplicationFactory<Startup>
     {
+        private readonly DbFixture _dbFixture;
+
+        public BlogWebApplicationFactory(DbFixture dbFixture)
+        {
+            _dbFixture = dbFixture;
+        }
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Test");
@@ -26,28 +35,14 @@ namespace BlogApp.Api.Tests
                 // Add ApplicationDbContext using an in-memory database for testing.
                 services.AddDbContext<BlogDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryDbForTesting");
+                    // uses the db name which comes from the collection fixture
+                    var connString = $"Server=localhost,1433;Database={_dbFixture.BlogDbName};User=sa;Password=Your_password123";
+                    options.UseSqlServer(connString);
 
                     // print EF debug logs during tests
                     var fac = LoggerFactory.Create(builder => { builder.AddDebug(); });
                     options.UseLoggerFactory(fac);
                 });
-
-                using (var scope = services.BuildServiceProvider().CreateScope())
-                {
-                    var scopedServices = scope.ServiceProvider;
-                    var db = scopedServices.GetRequiredService<BlogDbContext>();
-
-                    // Ensure the database is created.
-                    db.Database.EnsureCreated();
-                }
-            })
-            .ConfigureAppConfiguration((context, config) =>
-            {
-                //config.AddInMemoryCollection(new[]
-                //{
-                //    // TODO: Add later the docker connection string
-                //});
             })
             .ConfigureLogging(builder =>
             {

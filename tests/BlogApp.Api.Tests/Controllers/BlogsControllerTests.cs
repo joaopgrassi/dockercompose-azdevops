@@ -8,6 +8,7 @@ using Xunit;
 
 namespace BlogApp.Api.Tests.Controllers
 {
+    [Collection("Database")]
     public sealed class BlogsControllerTests : IClassFixture<BlogWebApplicationFactory>
     {
         private readonly BlogWebApplicationFactory _factory;
