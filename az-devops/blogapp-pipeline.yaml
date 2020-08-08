@@ -18,6 +18,11 @@ trigger:
 pool:
   vmImage: ubuntu-16.04
 
+variables:
+  buildConfiguration: 'Release'
+  appProjectDir: 'src/BlogApp.Api'
+  coverageReportDir: '$(Build.SourcesDirectory)/$(appProjectDir)/coverlet/reports'
+
 jobs:
 - job:
   displayName: Build App
@@ -35,6 +40,13 @@ jobs:
       packageType: 'sdk'
       version: '3.1.x'
 
+  - task: DotNetCoreCLI@2
+    displayName: Install ReportGenerator tool
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install --tool-path . dotnet-reportgenerator-globaltool --ignore-failed-sources
+
   - task: NuGetCommand@2
     displayName: Restore NuGet packages
     inputs:
@@ -45,11 +57,21 @@ jobs:
     displayName: Build
     inputs:
       command: build
-      projects: src/BlogApp.Api/BlogApp.Api.csproj
-      arguments: --no-restore
+      projects: $(appProjectDir)/BlogApp.Api.csproj
+      arguments: '-c $(buildConfiguration) --no-restore'
 
   - task: DotNetCoreCLI@2
     displayName: Test
     inputs:
       command: test
       projects: 'tests/**/*.csproj'
+      arguments: '-c $(buildConfiguration) --collect:"XPlat Code Coverage"'
+
+  - script: reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(coverageReportDir) -reporttypes:"Cobertura"
+    displayName: Create coverage reports
+
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage'
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: $(coverageReportDir)/Cobertura.xml
