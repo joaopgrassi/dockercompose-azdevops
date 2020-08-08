@@ -67,7 +67,7 @@ jobs:
       projects: 'tests/**/*.csproj'
       arguments: '-c $(buildConfiguration) --collect:"XPlat Code Coverage"'
 
-  - script: reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(coverageReportDir) -reporttypes:"Cobertura"
+  - script: ./reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(coverageReportDir) -reporttypes:"Cobertura"
     displayName: Create coverage reports
 
   - task: PublishCodeCoverageResults@1
