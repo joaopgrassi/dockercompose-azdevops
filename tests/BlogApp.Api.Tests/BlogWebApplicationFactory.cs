@@ -32,7 +32,6 @@ namespace BlogApp.Api.Tests
                 if (descriptor != null)
                     services.Remove(descriptor);
 
-                // Add ApplicationDbContext using an in-memory database for testing.
                 services.AddDbContext<BlogDbContext>(options =>
                 {
                     // uses the db name which comes from the collection fixture

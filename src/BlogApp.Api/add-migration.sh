@@ -1,6 +1,6 @@
 ﻿#!/bin/bash
 
-echo Enter migration name?
+echo Enter migration name
 
 read -p 'MigrationName: ' migrationName
 
