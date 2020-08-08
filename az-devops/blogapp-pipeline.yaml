@@ -1,0 +1,54 @@
+name: "$(Date:yyyy).$(Date:MM).$(Rev:r)"
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - features/*
+    - bugs/*
+  paths:
+    include:
+    - src/*
+    - src/tests/*
+    - az-devops/*
+    - BlogApp.sln
+    - Directory.Build.props
+
+pool:
+  vmImage: ubuntu-16.04
+
+jobs:
+- job:
+  steps:
+  - task: DockerCompose@0
+    displayName: docker-compose up
+    inputs:
+      containerregistrytype: Container Registry
+      dockerComposeFile: docker-compose.yml
+      dockerComposeCommand: 'up -d'
+  
+  - task: UseDotNet@2
+    displayName: 'Installing .NET SDK'
+    inputs:
+      packageType: 'sdk'
+      version: '3.1.x'
+
+  - task: NuGetCommand@2
+    displayName: Restore NuGet packages
+    inputs:
+      restoreSolution: BlogApp.sln
+      includeNuGetOrg: true
+
+  - task: DotNetCoreCLI@2
+    displayName: Build
+    inputs:
+      command: build
+      projects: src/BlogApp.Api/BlogApp.Api.csproj
+      arguments: --no-restore
+
+  - task: DotNetCoreCLI@2
+    displayName: Test
+    inputs:
+      command: test
+      projects: 'tests/**/*.csproj'
