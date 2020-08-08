@@ -18,7 +18,7 @@ namespace BlogApp.Api.Tests
 
         public DbFixture()
         {
-            var connString = $"Server=localhost,1433;Database={BlogDbName};User=sa;Password=Your_password123";
+            var connString = $"Server=localhost,1433;Database={BlogDbName};User=sa;Password=2@LaiNw)PDvs^t>L!Ybt]6H^%h3U>M";
 
             var builder = new DbContextOptionsBuilder<BlogDbContext>();
 
