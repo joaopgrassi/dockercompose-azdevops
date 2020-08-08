@@ -20,16 +20,17 @@ pool:
 
 jobs:
 - job:
+  displayName: Build App
   steps:
   - task: DockerCompose@0
-    displayName: docker-compose up
+    displayName: Start dependencies (docker-compose)
     inputs:
       containerregistrytype: Container Registry
       dockerComposeFile: docker-compose.yml
       dockerComposeCommand: 'up -d'
   
   - task: UseDotNet@2
-    displayName: 'Installing .NET SDK'
+    displayName: Installing .NET SDK
     inputs:
       packageType: 'sdk'
       version: '3.1.x'
