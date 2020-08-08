@@ -34,9 +34,8 @@ namespace BlogApp.Api.Tests
 
                 services.AddDbContext<BlogDbContext>(options =>
                 {
-                    // uses the db name which comes from the collection fixture
-                    var connString = $"Server=localhost,1433;Database={_dbFixture.BlogDbName};User=sa;Password=Your_password123";
-                    options.UseSqlServer(connString);
+                    // uses the connection string from the fixture
+                    options.UseSqlServer(_dbFixture.ConnString);
 
                     // print EF debug logs during tests
                     var fac = LoggerFactory.Create(builder => { builder.AddDebug(); });

@@ -13,16 +13,17 @@ namespace BlogApp.Api.Tests
     {
         private readonly BlogDbContext _dbContext;
         public readonly string BlogDbName = $"Blog-{Guid.NewGuid()}";
+        public readonly string ConnString;
         
         private bool _disposed;
 
         public DbFixture()
         {
-            var connString = $"Server=localhost,1433;Database={BlogDbName};User=sa;Password=2@LaiNw)PDvs^t>L!Ybt]6H^%h3U>M";
+            ConnString = $"Server=localhost,1433;Database={BlogDbName};User=sa;Password=2@LaiNw)PDvs^t>L!Ybt]6H^%h3U>M";
 
             var builder = new DbContextOptionsBuilder<BlogDbContext>();
 
-            builder.UseSqlServer(connString);
+            builder.UseSqlServer(ConnString);
             _dbContext = new BlogDbContext(builder.Options);
 
             _dbContext.Database.Migrate();
