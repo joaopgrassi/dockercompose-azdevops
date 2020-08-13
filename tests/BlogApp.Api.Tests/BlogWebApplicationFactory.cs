@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System.Linq;
 using Xunit;
 
@@ -15,37 +14,26 @@ namespace BlogApp.Api.Tests
         private readonly DbFixture _dbFixture;
 
         public BlogWebApplicationFactory(DbFixture dbFixture)
-        {
-            _dbFixture = dbFixture;
-        }
+            => _dbFixture = dbFixture;
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Test");
             builder.ConfigureServices(services =>
             {
-                // Remove the app's ApplicationDbContext registration.
+                // Remove the app's BlogDbContext registration.
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType ==
                         typeof(DbContextOptions<BlogDbContext>));
 
-                if (descriptor != null)
+                if (descriptor is object)
                     services.Remove(descriptor);
 
                 services.AddDbContext<BlogDbContext>(options =>
                 {
                     // uses the connection string from the fixture
                     options.UseSqlServer(_dbFixture.ConnString);
-
-                    // print EF debug logs during tests
-                    var fac = LoggerFactory.Create(builder => { builder.AddDebug(); });
-                    options.UseLoggerFactory(fac);
                 });
-            })
-            .ConfigureLogging(builder =>
-            {
-                builder.AddDebug();
-                builder.SetMinimumLevel(LogLevel.Information);
             });
         }
     }
