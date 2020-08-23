@@ -1,0 +1,48 @@
+name: BlogAPI
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'BlogApp.sln'
+      - 'Directory.Build.props'
+      - '**/blogapi-workflow.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'BlogApp.sln'
+      - 'Directory.Build.props'
+      - '**/blogapi-workflow.yml'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+    
+      - name: Start dependencies (docker-compose)
+        run: |
+          docker-compose up -d  
+
+      - name: Wait for SQL Server container
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '5s'
+
+      - name: Install .NET Core SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
+    
+      - name: Restore NuGet packages
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build -c Release --no-restore
+    
+      - name: Test
+        run: dotnet test --no-build
+
