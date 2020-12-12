@@ -16,6 +16,7 @@ on:
       - 'BlogApp.sln'
       - 'Directory.Build.props'
       - '**/blogapi-workflow.yml'
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
