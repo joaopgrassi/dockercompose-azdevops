@@ -46,12 +46,12 @@ jobs:
       command: custom
       custom: tool
       arguments: install --tool-path . dotnet-reportgenerator-globaltool --ignore-failed-sources
-
-  - task: NuGetCommand@2
-    displayName: Restore NuGet packages
+  
+  - task: DotNetCoreCLI@2
+    displayName: Restore
     inputs:
-      restoreSolution: BlogApp.sln
-      includeNuGetOrg: true
+      command: restore
+      projects: '**/*.csproj'
 
   - task: DotNetCoreCLI@2
     displayName: Build
@@ -65,7 +65,7 @@ jobs:
     inputs:
       command: test
       projects: 'tests/**/*.csproj'
-      arguments: '-c $(buildConfiguration) --collect:"XPlat Code Coverage"'
+      arguments: '-c $(buildConfiguration) --no-restore --collect:"XPlat Code Coverage"'
 
   - script: ./reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(coverageReportDir) -reporttypes:"Cobertura"
     displayName: Create coverage reports
